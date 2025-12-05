@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../providers/recipe_provider.dart';
 import '../widgets/recipe_card.dart';
 
@@ -8,19 +9,20 @@ class RecipeListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final recipeProvider = Provider.of<RecipeProvider>(context);
+    final recipes = context.watch<RecipeProvider>().recipes;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Recipes'),
       ),
-      body: ListView.builder(
-        itemCount: recipeProvider.recipes.length,
-        itemBuilder: (context, index) {
-          final recipe = recipeProvider.recipes[index];
-          return RecipeCard(recipe: recipe);
-        },
-      ),
+      body: recipes.isEmpty
+          ? const Center(child: Text('No recipes yet'))
+          : ListView.builder(
+              itemCount: recipes.length,
+              itemBuilder: (context, index) {
+                return RecipeCard(recipe: recipes[index]);
+              },
+            ),
     );
   }
 }
