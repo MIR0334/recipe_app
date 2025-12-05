@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/recipe_provider.dart';
-import 'screens/recipe_list_screen.dart';
+import 'screens/welcome_screen.dart';   // 👈 NEW IMPORT
+// (CategoryScreen will be imported inside welcome_screen.dart)
 
 void main() {
   runApp(
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
-      home: const RecipeListScreen(),
+      home: const WelcomeScreen(),   // 👈 START HERE NOW
     );
   }
 }

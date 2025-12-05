@@ -15,65 +15,171 @@ class RecipeDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final recipeProvider = context.watch<RecipeProvider>();
-    final updatedRecipe = recipeProvider.recipes
-        .firstWhere((r) => r.id == recipe.id);
+    final isFavorite = recipe.isFavorite;
+
+    Color categoryColor(String category) {
+      switch (category) {
+        case 'Breakfast':
+          return const Color(0xFFFFB74D);
+        case 'Lunch':
+          return const Color(0xFF4FC3F7);
+        case 'Dinner':
+          return const Color(0xFFBA68C8);
+        case 'Work out':
+          return const Color(0xFF66BB6A);
+        case 'Own recipe':
+          return const Color(0xFFFF8A65);
+        default:
+          return Colors.grey;
+      }
+    }
+
+    final headerColor = categoryColor(recipe.category);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(updatedRecipe.title),
-        actions: [
-          IconButton(
-            icon: Icon(
-              updatedRecipe.isFavorite
-                  ? Icons.star
-                  : Icons.star_border,
+        backgroundColor: headerColor.withOpacity(0.9),
+        title: Hero(
+          tag: 'recipe-title-${recipe.id}',
+          child: Material(
+            type: MaterialType.transparency,
+            child: Text(
+              recipe.title,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              ),
             ),
-            onPressed: () {
-              recipeProvider.toggleFavorite(updatedRecipe.id);
-            },
           ),
+        ),
+        actions: [
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            transitionBuilder: (child, animation) =>
+                ScaleTransition(scale: animation, child: child),
+            child: IconButton(
+              key: ValueKey<bool>(isFavorite),
+              icon: Icon(
+                isFavorite ? Icons.star : Icons.star_border,
+              ),
+              tooltip:
+                  isFavorite ? 'Remove from favourites' : 'Add to favourites',
+              onPressed: () {
+                recipeProvider.toggleFavorite(recipe.id);
+              },
+            ),
+          ),
+          const SizedBox(width: 4),
         ],
       ),
-      body: SingleChildScrollView(
+      body: Container(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              headerColor.withOpacity(0.07),
+              Colors.white,
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: ListView(
           children: [
-            Text(
-              updatedRecipe.description,
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Ingredients',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            ...updatedRecipe.ingredients.map(
-              (item) => ListTile(
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.circle, size: 8),
-                title: Text(item),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Steps',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            ...updatedRecipe.steps.asMap().entries.map(
-              (entry) => ListTile(
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-                leading: CircleAvatar(
-                  radius: 10,
-                  child: Text('${entry.key + 1}',
-                      style: const TextStyle(fontSize: 12)),
+            // Time
+            Row(
+              children: [
+                const Text(
+                  '⏱ ',
+                  style: TextStyle(fontSize: 20),
                 ),
-                title: Text(entry.value),
+                Text(
+                  recipe.time,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+
+            // Description
+            if (recipe.description.isNotEmpty) ...[
+              Text(
+                recipe.description,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontStyle: FontStyle.italic,
+                ),
               ),
+              const SizedBox(height: 20),
+            ],
+
+            // Ingredients
+            const Text(
+              'Ingredients',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            ...recipe.ingredients.map(
+              (item) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('• ', style: TextStyle(fontSize: 16)),
+                    Expanded(
+                      child: Text(
+                        item,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Steps
+            const Text(
+              'Steps',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            ...recipe.steps.asMap().entries.map(
+              (entry) {
+                final stepIndex = entry.key + 1;
+                final stepText = entry.value;
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '$stepIndex. ',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          stepText,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ],
         ),
