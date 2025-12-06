@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../models/recipe.dart';
@@ -20,10 +23,13 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();
-  final _timeController = TextEditingController();          // ⏱ new
+  final _timeController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _ingredientsController = TextEditingController();
   final _stepsController = TextEditingController();
+
+  final ImagePicker _picker = ImagePicker();
+  File? _imageFile; //  holds the captured image
 
   @override
   void dispose() {
@@ -69,6 +75,18 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
     }
   }
 
+  Future<void> _pickImage() async {
+    final picked = await _picker.pickImage(
+      source: ImageSource.camera,
+      maxWidth: 1200,
+    );
+    if (picked == null) return;
+
+    setState(() {
+      _imageFile = File(picked.path);
+    });
+  }
+
   void _saveRecipe() {
     if (!_formKey.currentState!.validate()) return;
 
@@ -89,9 +107,10 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
       title: _nameController.text.trim(),
       description: _descriptionController.text.trim(),
       category: widget.category,
-      time: _timeController.text.trim(),            // ⏱ save time
+      time: _timeController.text.trim(),
       ingredients: ingredients,
       steps: steps,
+      imagePath: _imageFile?.path, // save path (can be null)
     );
 
     context.read<RecipeProvider>().addRecipe(newRecipe);
@@ -123,10 +142,14 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
+              // Header
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(emoji, style: const TextStyle(fontSize: 48)),
+                  Text(
+                    emoji,
+                    style: const TextStyle(fontSize: 48),
+                  ),
                   const SizedBox(height: 8),
                   Text(
                     'Create your ${widget.category.toLowerCase()} recipe',
@@ -138,13 +161,64 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'Give it a name, time, ingredients and steps, then save it to your cookbook.',
+                    'Add a photo, time, ingredients and steps, then save it to your cookbook.',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 14),
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
+
+              // 📷 Take photo button + preview
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  child: Row(
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: _pickImage,
+                        icon: const Text('📷'),
+                        label: const Text('Take photo'),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 16,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _imageFile == null
+                            ? const Text(
+                                'No photo added yet.',
+                                style: TextStyle(fontSize: 13),
+                              )
+                            : SizedBox(
+                                height: 70,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.file(
+                                    _imageFile!,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Form card
               Card(
                 elevation: 3,
                 shape: RoundedRectangleBorder(

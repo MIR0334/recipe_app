@@ -9,7 +9,21 @@ class FavoritesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final favorites = context.watch<RecipeProvider>().favorites;
+    final provider = context.watch<RecipeProvider>();
+
+    // 🔹 If recipes are still loading, show spinner
+    if (!provider.isInitialized) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Favourites'),
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    final favorites = provider.favorites;
 
     return Scaffold(
       appBar: AppBar(
@@ -24,8 +38,6 @@ class FavoritesScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 return RecipeCard(
                   recipe: favorites[index],
-
-                  
                   isInFavoritesScreen: true,
                 );
               },

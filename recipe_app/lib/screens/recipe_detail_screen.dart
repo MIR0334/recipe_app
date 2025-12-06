@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -89,10 +91,7 @@ class RecipeDetailScreen extends StatelessWidget {
             // Time
             Row(
               children: [
-                const Text(
-                  '⏱ ',
-                  style: TextStyle(fontSize: 20),
-                ),
+                const Text('⏱ ', style: TextStyle(fontSize: 20)),
                 Text(
                   recipe.time,
                   style: const TextStyle(
@@ -181,6 +180,29 @@ class RecipeDetailScreen extends StatelessWidget {
                 );
               },
             ),
+            const SizedBox(height: 24),
+
+            //  Image under steps
+            if (recipe.imagePath != null &&
+                recipe.imagePath!.isNotEmpty) ...[
+              const Text(
+                'Photo',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.file(
+                  File(recipe.imagePath!),
+                  height: 220,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ],
           ],
         ),
       ),

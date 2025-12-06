@@ -32,13 +32,26 @@ class RecipeListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final allRecipes = context.watch<RecipeProvider>().recipes;
+    final provider = context.watch<RecipeProvider>();
+    final baseColor = _categoryColor(category);
 
+    // 🔹 Show loading indicator while recipes are being loaded from storage
+    if (!provider.isInitialized) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('$category Recipes'),
+          backgroundColor: baseColor.withOpacity(0.85),
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    final allRecipes = provider.recipes;
     final recipes = allRecipes
         .where((recipe) => recipe.category == category)
         .toList();
-
-    final baseColor = _categoryColor(category);
 
     return Scaffold(
       appBar: AppBar(
