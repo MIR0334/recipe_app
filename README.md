@@ -1,4 +1,5 @@
 It was very fun making this project, although I missed out on the project proposal, I will list down in detail everything about this app and my throught process. Have fun!
+(!!! Please edit the readme in order to be able to view the project structure properly, Thanks !!!)
 
 
 🍽️ Flutter Recipe App
