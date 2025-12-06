@@ -25,16 +25,11 @@ class RecipeCard extends StatelessWidget {
       return AnimatedSwitcher(
         duration: const Duration(milliseconds: 250),
         transitionBuilder: (child, animation) {
-          return ScaleTransition(
-            scale: animation,
-            child: child,
-          );
+          return ScaleTransition(scale: animation, child: child);
         },
         child: IconButton(
           key: ValueKey<bool>(recipe.isFavorite),
-          icon: Icon(
-            recipe.isFavorite ? Icons.star : Icons.star_border,
-          ),
+          icon: Icon(recipe.isFavorite ? Icons.star : Icons.star_border),
           tooltip: recipe.isFavorite
               ? 'Remove from favourites'
               : 'Add to favourites',
@@ -63,8 +58,35 @@ class RecipeCard extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.delete),
             tooltip: 'Delete recipe',
-            onPressed: () {
-              recipeProvider.deleteRecipe(recipe.id);
+            onPressed: () async {
+              final confirmed =
+                  await showDialog<bool>(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: const Text('Delete recipe'),
+                      content: Text(
+                        'Are you sure you want to delete "${recipe.title}"?',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(ctx).pop(false),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.of(ctx).pop(true),
+                          child: const Text(
+                            'Delete',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ) ??
+                  false;
+
+              if (confirmed) {
+                await recipeProvider.deleteRecipe(recipe.id);
+              }
             },
           ),
         ],
@@ -82,10 +104,7 @@ class RecipeCard extends StatelessWidget {
             type: MaterialType.transparency,
             child: Text(
               recipe.title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
           ),
         ),
@@ -96,10 +115,7 @@ class RecipeCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               '⏱ ${recipe.time}',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey.shade700,
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
             ),
           ],
         ),
