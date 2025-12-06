@@ -1,7 +1,7 @@
 import '../models/recipe.dart';
 
 final List<Recipe> sampleRecipes = [
-  // 🥐 BREAKFAST
+  //  BREAKFAST
   Recipe(
     id: 'b1',
     title: 'Fluffy Pancakes',
@@ -46,7 +46,7 @@ final List<Recipe> sampleRecipes = [
     ],
   ),
 
-  // 🥪 LUNCH
+  //  LUNCH
   Recipe(
     id: 'l1',
     title: 'Chicken Wrap',
@@ -88,7 +88,7 @@ final List<Recipe> sampleRecipes = [
     ],
   ),
 
-  // 🍝 DINNER
+  //  DINNER
   Recipe(
     id: 'd1',
     title: 'Spaghetti Bolognese',
@@ -135,7 +135,7 @@ final List<Recipe> sampleRecipes = [
     ],
   ),
 
-  // 🏋️‍♀️ WORK OUT
+  //  WORK OUT
   Recipe(
     id: 'w1',
     title: 'Protein Oats Bowl',
@@ -177,7 +177,7 @@ final List<Recipe> sampleRecipes = [
     ],
   ),
 
-  // ✨ OWN RECIPE
+  //  OWN RECIPE
   Recipe(
     id: 'o1',
     title: 'Your Signature Dish',

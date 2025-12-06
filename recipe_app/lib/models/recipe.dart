@@ -6,7 +6,7 @@ class Recipe {
   final String time; // ⏱ total time to make
   final List<String> ingredients;
   final List<String> steps;
-  final String? imagePath; //   NEW: optional image path
+  final String? imagePath; 
   bool isFavorite;
 
   Recipe({
@@ -17,7 +17,7 @@ class Recipe {
     required this.time,
     required this.ingredients,
     required this.steps,
-    this.imagePath,          //  optional
+    this.imagePath,          
     this.isFavorite = false,
   });
 
